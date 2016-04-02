@@ -15,14 +15,14 @@ def repitition(listOfLists):
 
     while p < howManyBars:
         fromBar = randint(0,4)
-        toBar = random.choice(list(s)))
+        toBar = random.choice(list(s))
         s.remove(toBar)
         # remove that possible bar
-        
+
 # ADD MUTATIONS
         newList.insert(toBar,listOfLists[fromBar])
 # ADD MUTATIONS
-        p++
+        p += 1
     return newList
 
 def weightedRand():
