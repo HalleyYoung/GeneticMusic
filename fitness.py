@@ -1,7 +1,7 @@
 __author__ = 'halley'
 from Note import *
 
-def fitness(notes, ties):
+def fitness(notes):
     rhythms = [i.dur for i in notes]
     degrees = [i.degree for i in notes]
     intervals = [degrees[i - 1] - degrees[i] for i in range(1, len(degrees))]

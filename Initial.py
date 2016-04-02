@@ -15,4 +15,3 @@ def createInitial():
                 pits = genScalewise(rhythm)
             else:
                 pits = genChordal(chord, rhythm)
-                

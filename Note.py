@@ -22,3 +22,30 @@ class Note():
         else:
             self.midi = midi
             self.dur = dur
+
+def pitToPitch(scale_note):
+    if scale_note.midi != None and scale_note.midi % 12 in white_keys:
+        return scale_note.midi
+    else:
+        degree = scale_note.degree
+        scale = scale_note.scale
+        scale_root = int(scale[:-1])
+        scale_type = scale[-1]
+        scale_sign = signs[scale_type][scale_root]
+        natural_is_signed = (scales[scale][degree % 7].midi ) % 12 not in white_keys
+        if natural_is_signed:
+            sign = scale_sign + scale_note.sign
+        else:
+            sign = scale_note.sign
+        note_choices = notes[scale_note.midi]
+        if sign == -2:
+            pitch_name = filter(lambda i: i.count('-') == 2, note_choices)[0]
+        elif sign == -1:
+            pitch_name = filter(lambda i: i.count('-') == 1, note_choices)[0]
+        elif sign == 0:
+            pitch_name = filter(lambda i: i.count('-') == 0 and i.count('#') == 0, note_choices)[0]
+        elif sign == 1:
+            pitch_name = filter(lambda i: i.count('#') == 1, note_choices)[0]
+        elif sign == 2:
+            pitch_name = filter(lambda i: i.count('#') == 2, note_choices)[0]
+        return pitch_name
