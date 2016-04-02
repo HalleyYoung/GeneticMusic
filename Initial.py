@@ -2,55 +2,108 @@ __author__ = 'halley'
 from Note import *
 import rhythmhelpers as rhy
 import random
+from music21 import *
 
 
 def weightedRand():
-	randNum = random()
-	if random < .4:
+	randNum = random.uniform(0,1)
+	if randNum < .4:
 		return 1
 		# go up one
-	elif .4 <= random < .7:
+	elif .4 <= randNum < .7:
 		return 0
 		# repeat the note
-	elif .7 <= random < .9:
+	elif .7 <= randNum < .9:
 		return 2
 		# go up two
-	elif .9 <= random < .95:
+	elif .9 <= randNum < .95:
 		return 3
 		# go up three
-	elif .95 <= random < 1:
+	elif .95 <= randNum < 1:
 		return 4
+
 		# go up 4
 
-def genScalewise(rhythm):
+#gen next chord note up or down a certain amount
+def getNthChordNote(prev_note, cord, up_down = 1, how_many = 1):
+    n = 0
+    if prev_note > 14:
+        up_down = -1
+    while n < how_many:
+        prev_note += up_down
+        if prev_note % 7 in [i % 7 for i in cord]:
+            n += 1
+    return prev_note
+
+
+#get a random chord note
+def randomChordNote(prev_note, cord):
+    upOrDown = 1 if random.uniform(0,1) < 0.6 else -1
+    if prev_note >= 10:
+        upOrDown = -1
+    if prev_note >= 14:
+        upOrDown = -1
+        how_many = 2
+    elif prev_note <= 4:
+        upOrDown = 1
+        how_many = 1
+    else:
+        how_many = 1 if random.uniform(0,1) < 0.9 else 2
+    return getNthChordNote(prev_note, cord, upOrDown, how_many)
+
+#generate chordal cells
+def genChordal(rhythm, cord = [0,2,4], prev_note = 0):
+	pitches = []
+	for i in range(0, len(rhythm)):
+		pitches.append(randomChordNote(prev_note, cord))
+		prev_note = pitches[-1]
+	return pitches
+
+def genScalewise(rhythm, prev_note = None):
 	# C=0, pitches = -12 to 12
 	#rhythm: list of note, 1.0 = quarter notes, 2.0 = half, .5 = eigth -1 = rest
-	initialNote = randrange(-3,4)
+	if prev_note == None:
+		prev_note = random.randint(-3,4)
 	notes=[]
-	notes[0]=initialNote
-	l = 0
+	notes.append(prev_note)
 
-	while l < len(rhythm):
+	for i in range(1, len(rhythm)):
 		jump = weightedRand()
-		upDown = randrange(0,2)
+		upDown = random.randint(0,1)
 		if upDown == 1:
-			notes.append(notes[l] + jump)
+			notes.append(notes[-1] + jump)
 		elif upDown == 0:
-			notes.append(notes[l] - jump)
-		l+=1
+			notes.append(notes[-1] - jump)
 	return notes
 
 
 def createInitial():
-    chord = random.choice([[0,2,4], [4,6,8], [1,3,5]])
-    notes = []
-    for i in range(0,3):
-        for j in range(0,7):
-            rhythm = rhy.randomDuration(2.0)
-            if random.uniform(0,1) < 0.8:
-                pits = genScalewise(rhythm)
-            	notes.append(pits)
-            else:
-                pits = genChordal(chord, rhythm)
-                notes.append(pits)
-    return notes
+	chord = random.choice([[0,2,4],[4,6,8],[1,3,5]])
+	notes = []
+	prev_note = random.randint(-3,4)
+	for i in range(0,3):
+		for j in range(0,7):
+			rhythm = rhy.randomDuration(2.0)
+			if random.uniform(0,1) < 0.8:
+				pits = genScalewise(rhythm, prev_note)
+			else:
+				pits = genChordal(rhythm, chord, prev_note)
+			prev_note = pits[-1]
+		notes.append([(pits[k],rhythm[k]) for k in range(0, len(rhythm))])
+	return notes
+
+
+initial = createInitial()
+score = stream.Score()
+for two_beats in initial:
+	for pit, dur in two_beats:
+		Note_object = Note(scale='0M', degree=pit, dur=dur)
+		if Note_object.dur > 0:
+			n = note.Note(pitToPitch(Pit(scale=Note_object.scale, degree=Note_object.degree + 35)))
+			n.quarterLength = abs(Note_object.dur)
+		else:
+			n = note.Rest()
+			n.quarterLength = abs(Note_object.dur)
+		score.append(n)
+
+score.show()
