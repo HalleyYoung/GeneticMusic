@@ -4,6 +4,26 @@ import rhythmhelpers as rhy
 import random
 from music21 import *
 
+def repitition(listOfLists):
+    howManyBars = randint(0,3)
+    # how many bars to be copied
+
+    newList=[]
+
+    s=set(range(1,5))
+    # set of bars to which it can be copied: 1,2,3,4
+
+    while p < howManyBars:
+        fromBar = randint(0,4)
+        toBar = random.choice(list(s)))
+        s.remove(toBar)
+        # remove that possible bar
+        
+# ADD MUTATIONS
+        newList.insert(toBar,listOfLists[fromBar])
+# ADD MUTATIONS
+        p++
+    return newList
 
 def weightedRand():
 	randNum = random.uniform(0,1)
