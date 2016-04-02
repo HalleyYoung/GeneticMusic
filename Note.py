@@ -2,26 +2,19 @@ __author__ = 'halley'
 from constants import *
 
 class Note():
-    def __init__(self, pit = None, dur = 0, midi = None, scale = None, degree = None, sign = 0):
-        if pit != None:
-              self.pit = pit
-              self.scale = pit.scale
-              self.degree = pit.degree
-              self.sign = pit.sign
-              self.midi = pit.midi
-              self.dur = dur
-        elif pit == None and self.scale != None and self.degree != None:
-            self.scale = scale
-            self.degree = degree
-            self.sign = sign
+    def __init__(self, pit=None, dur=0, midi=None, scale=None, degree=None, sign=0):
+        self.pit = pit
+        self.dur = dur
+        self.midi = midi
+        self.scale = scale
+        self.degree = degree
+        self.sign = sign
+
+        if self.pit is None and self.scale is not None and self.degree is not None:
             scale = scales[self.scale]
-            sign = 0 if self.sign == None else self.sign
+            sign = 0 if self.sign is None else self.sign
             self.midi = scale[degree % len(scale)].midi + (degree/len(scale)) * 12 + sign
-            self.pit = Pit(midi=self.midi, scale = self.scale, degree = self.degree, sign = self.sign)
-            self.dur = dur
-        else:
-            self.midi = midi
-            self.dur = dur
+            self.pit = Pit(midi=self.midi, scale=self.scale, degree=self.degree, sign=self.sign)
 
 def pitToPitch(scale_note):
     if scale_note.midi != None and scale_note.midi % 12 in white_keys:
